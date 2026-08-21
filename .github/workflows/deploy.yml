@@ -1,0 +1,53 @@
+name: Deploy URL Shortener
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-south-1
+  LAMBDA_FUNCTION: url-shortener-function
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Package Lambda
+        run: |
+          cd lambda
+          zip -r ../lambda.zip .
+
+      - name: Deploy Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ env.LAMBDA_FUNCTION }} \
+            --zip-file fileb://lambda.zip \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Wait for Lambda update
+        run: |
+          aws lambda wait function-updated \
+            --function-name ${{ env.LAMBDA_FUNCTION }} \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Smoke test
+        run: |
+          API_URL=$(aws lambda get-function-configuration \
+            --function-name ${{ env.LAMBDA_FUNCTION }} \
+            --query 'Environment.Variables.BASE_URL' \
+            --output text)
+          echo "Testing API at $API_URL"
+          curl -f "$API_URL/" || exit 1
+          echo "Smoke test passed!"
