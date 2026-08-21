@@ -204,30 +204,9 @@ curl -L "<api-url>/<short-code>"
 | API Gateway | 1M calls/month | $1.00 per 1M calls |
 | DynamoDB | 25GB + 200M requests | $1.25 per 1M writes |
 | CloudWatch Logs | 5GB/month | $0.50/GB |
-| **Total** | **$0 within free tier** | **Pennies at low traffic** |
+| **Total** | **$0 within free tier** 
 
 > This project stays within AWS Free Tier for normal usage. No NAT Gateway, no EC2 — nothing expensive running 24/7.
 
 ---
 
-## What I'd Improve With More Time
-
-- Add a custom domain via Route53 + ACM (e.g. `https://go.kjain.dev/guOazk`)
-- Add a simple frontend UI (React + S3 + CloudFront) to shorten URLs without curl
-- Add analytics endpoint: `GET /{code}/stats` → returns hit count and creation date
-- Add rate limiting via API Gateway usage plans to prevent abuse
-- Add URL validation to block malicious/phishing URLs
-- Store creation timestamp and add expiry support per URL
-
----
-
-## Related Projects
-
-- [Project 1 — CI/CD Pipeline with Terraform + ECS + GitHub Actions](https://github.com/Ketanj20/project1-cicd-aws)
-- [Project 2 — Observability Stack with Prometheus + Grafana](https://github.com/Ketanj20/project2-observability-aws)
-
----
-
-## Author
-
-Ketan Jain — [GitHub](https://github.com/Ketanj20)
